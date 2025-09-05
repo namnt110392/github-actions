@@ -17,7 +17,7 @@ if (isDev) {
     require('electron-reloader')(module)
   } catch (_) {}
 
-  // giữ reference tới pyshell
+  // giữ reference tới pyshell 
   pyshell = new PythonShell(API_DEV_PATH)
 } else {
   // giữ reference tới process
@@ -71,3 +71,4 @@ app.on("before-quit", function () {
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
+
