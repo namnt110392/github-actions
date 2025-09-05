@@ -1,0 +1,49 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # điều chỉnh theo cần thiết
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          npm run py-install
+
+      - name: Build Python backend to exe
+        run: npm run py-build
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'  # chỉnh theo repo
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build Electron App with electron-builder
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          SKIP_PY_BUILD: true  # nếu cần tránh chạy lại py-build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-app
+          path: dist/**/*.exe
